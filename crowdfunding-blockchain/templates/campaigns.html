@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Campaigns - BlockFund</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">BlockFund</a></h1>
+            <div class="nav-links">
+                <a href="{{ url_for('campaigns') }}" class="btn">All Campaigns</a>
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>All Active Campaigns</h2>
+        <p>Discover and support amazing projects on our blockchain-powered crowdfunding platform</p>
+
+        <div class="campaign-grid">
+            {% for campaign in campaigns %}
+            <div class="campaign-card">
+                <h3>{{ campaign.title }}</h3>
+                <p>{{ campaign.description[:150] }}{% if campaign.description|length > 150 %}...{% endif %}</p>
+                <div class="campaign-stats">
+                    <div>
+                        <strong>Target:</strong> {{ campaign.target_amount }} coins
+                    </div>
+                    <div>
+                        <strong>Raised:</strong> {{ campaign.current_amount }} coins
+                    </div>
+                    <div>
+                        <strong>Progress:</strong> {{ ((campaign.current_amount / campaign.target_amount) * 100)|round
+                        }}%
+                    </div>
+                    <div>
+                        <strong>Deadline:</strong> {{ campaign.deadline }}
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                        style="width: {{ ((campaign.current_amount / campaign.target_amount) * 100)|round }}%"></div>
+                </div>
+                <a href="{{ url_for('campaign_details', campaign_id=campaign.id) }}" class="btn btn-primary">View
+                    Details</a>
+            </div>
+            {% else %}
+            <div class="no-campaigns">
+                <h3>No campaigns yet</h3>
+                <p>Be the first to create a campaign!</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>

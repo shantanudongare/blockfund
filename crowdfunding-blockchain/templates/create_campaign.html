@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Campaign - BlockFund</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>BlockFund</h1>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Create New Campaign</h2>
+            <form id="campaignForm">
+                <div class="form-group">
+                    <label>Campaign Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Target Amount (coins)</label>
+                    <input type="number" id="target_amount" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" id="deadline" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Campaign</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('campaignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/create-campaign', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value,
+                    target_amount: document.getElementById('target_amount').value,
+                    deadline: document.getElementById('deadline').value
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Campaign created successfully!');
+                window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+
+</html>

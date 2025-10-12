@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockFund - Decentralized Crowdfunding Platform</title>
+    <meta name="description"
+        content="Transparent, secure, and blockchain-powered crowdfunding platform with zero fees and complete transparency.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>BlockFund</h1>
+            <div class="nav-links">
+                <button id="theme-toggle" class="btn btn-small" onclick="toggleTheme()">🌙 Dark</button>
+                <a href="{{ url_for('campaigns') }}" class="btn">📊 All Campaigns</a>
+                <a href="{{ url_for('login') }}" class="btn">🔑 Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">🚀 Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Decentralized Crowdfunding Platform</h1>
+                <p>Transparent, secure, and blockchain-powered fundraising for your projects. Join the future of
+                    crowdfunding with complete transparency and zero platform fees.</p>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px;">
+                    <a href="{{ url_for('register') }}" class="btn btn-large btn-primary">🚀 Get Started</a>
+                    <a href="{{ url_for('campaigns') }}" class="btn btn-large btn-outline">📊 View Campaigns</a>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-counter="{{ campaigns|length if campaigns else 0 }}">0</span>
+                    <span class="hero-stat-label">Active Campaigns</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-counter="100">0</span>
+                    <span class="hero-stat-label">% Transparent</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" data-counter="0">0</span>
+                    <span class="hero-stat-label">Platform Fees</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Why Choose BlockFund?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔒 Blockchain Security</h3>
+                    <p>Every transaction is recorded on an immutable blockchain, ensuring complete transparency and
+                        security for all donations and campaign funds.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 Zero Platform Fees</h3>
+                    <p>100% of your donation goes directly to the campaign. No hidden fees, no middlemen - just pure
+                        peer-to-peer funding.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌍 Global Accessibility</h3>
+                    <p>Connect with supporters worldwide. Our decentralized platform breaks down geographical barriers
+                        for truly global crowdfunding.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Instant Transactions</h3>
+                    <p>Fast, secure transactions with real-time updates. See your contributions reflected immediately on
+                        the blockchain.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Full Transparency</h3>
+                    <p>Track every donation, view complete transaction history, and verify all campaign activities
+                        through our blockchain explorer.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Smart Contracts</h3>
+                    <p>Automated fund distribution based on campaign milestones, ensuring accountability and trust
+                        between creators and backers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if campaigns %}
+    <section class="recent-campaigns">
+        <div class="container">
+            <h2>Recent Campaigns</h2>
+            <div class="campaign-grid">
+                {% for campaign in campaigns[:3] %}
+                <div class="campaign-card" data-created="{{ campaign.created_at }}"
+                    data-donations="{{ campaign.donations_count|default(0) }}">
+                    <div class="campaign-header">
+                        <h3>{{ campaign.title }}</h3>
+                    </div>
+                    <p>{{ campaign.description[:120] }}{% if campaign.description|length > 120 %}...{% endif %}</p>
+
+                    <div class="campaign-stats">
+                        <div class="campaign-stat">
+                            <span class="campaign-stat-value">{{ campaign.target_amount }}</span>
+                            <span class="campaign-stat-label">Target</span>
+                        </div>
+                        <div class="campaign-stat">
+                            <span class="campaign-stat-value">{{ campaign.current_amount|default(0) }}</span>
+                            <span class="campaign-stat-label">Raised</span>
+                        </div>
+                        <div class="campaign-stat">
+                            <span class="campaign-stat-value">{{ ((campaign.current_amount|default(0) /
+                                campaign.target_amount) * 100)|round }}%</span>
+                            <span class="campaign-stat-label">Progress</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill"
+                            style="width: {{ ((campaign.current_amount|default(0) / campaign.target_amount) * 100)|round }}%">
+                        </div>
+                        <div class="progress-text">{{ ((campaign.current_amount|default(0) / campaign.target_amount) *
+                            100)|round }}%</div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">
+                            ⏰ {{ campaign.deadline }}
+                        </span>
+                        <a href="{{ url_for('campaign_details', campaign_id=campaign.id) }}" class="btn btn-primary">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="{{ url_for('campaigns') }}" class="btn btn-large">View All Campaigns</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</body>
+
+</html>

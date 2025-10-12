@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ campaign.title }} - BlockFund</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>BlockFund</h1>
+            <div class="nav-links">
+                {% if is_logged_in %}
+                <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+                {% else %}
+                <a href="{{ url_for('campaigns') }}" class="btn">All Campaigns</a>
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="campaign-details">
+            <h1>{{ campaign.title }}</h1>
+            <p>{{ campaign.description }}</p>
+
+            <div class="campaign-info">
+                <div class="info-item">
+                    <strong>Target:</strong> {{ campaign.target_amount }} coins
+                </div>
+                <div class="info-item">
+                    <strong>Raised:</strong> {{ campaign.current_amount }} coins
+                </div>
+                <div class="info-item">
+                    <strong>Deadline:</strong> {{ campaign.deadline }}
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill"
+                    style="width: {{ ((campaign.current_amount / campaign.target_amount) * 100)|round }}%"></div>
+            </div>
+
+            {% if is_logged_in %}
+            <div class="donate-section">
+                <h3>Make a Donation</h3>
+                <form id="donateForm">
+                    <input type="number" id="amount" placeholder="Amount in coins" min="1" required>
+                    <button type="submit" class="btn btn-primary">Donate</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="donate-section">
+                <h3>Support This Campaign</h3>
+                <p>To make a donation, please <a href="{{ url_for('login') }}">login</a> or <a
+                        href="{{ url_for('register') }}">create an account</a>.</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Register to Donate</a>
+            </div>
+            {% endif %}
+
+            <div class="donations-list">
+                <h3>Recent Donations</h3>
+                {% for donation in donations %}
+                <div class="donation-item">
+                    <span><strong>{{ donation.username }}</strong> donated {{ donation.amount }} coins</span>
+                    <span class="tx-hash">TX: {{ donation.transaction_hash[:16] }}...</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('donateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const response = await fetch('/donate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    campaign_id: {{ campaign.id }},
+                amount: amount
+                })
+            });
+        const data = await response.json();
+        if (data.success) {
+            alert('Donation successful! TX Hash: ' + data.transaction_hash);
+            location.reload();
+        } else {
+            alert(data.message);
+        }
+        });
+    </script>
+    <script>
+        document.getElementById('donateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = document.getElementById('amount').value;
+            showLoading();
+
+            try {
+                const response = await fetch('/donate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        campaign_id: {{ campaign.id }},
+                    amount: amount
+                })
+            });
+
+        hideLoading();
+        const data = await response.json();
+
+        if (data.success) {
+            triggerConfetti();
+            showNotification(`🎉 Donation successful! You donated ${amount} coins!`, 'success');
+
+            setTimeout(() => {
+                showNotification(`Transaction Hash: ${data.transaction_hash.substring(0, 16)}...`, 'info');
+            }, 1500);
+
+            setTimeout(() => location.reload(), 3000);
+        } else {
+            showNotification(data.message, 'error');
+        }
+        } catch (error) {
+            hideLoading();
+            showNotification('An error occurred. Please try again.', 'error');
+        }
+    });
+
+        // Add helpful tooltips
+        document.querySelectorAll('.tx-hash').forEach(element => {
+            element.style.cursor = 'pointer';
+            element.addEventListener('click', function () {
+                copyToClipboard(this.textContent);
+            });
+            addTooltip(element, 'Click to copy full transaction hash');
+        });
+    </script>
+
+</body>
+
+</html>

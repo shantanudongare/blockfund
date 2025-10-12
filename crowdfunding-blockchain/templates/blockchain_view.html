@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Explorer - BlockFund</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>BlockFund</h1>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Blockchain Explorer</h2>
+        <div class="blockchain-actions">
+            <button onclick="loadBlockchain()" class="btn btn-primary">Refresh Chain</button>
+            <button onclick="validateChain()" class="btn">Validate Chain</button>
+        </div>
+        <div id="blockchain-container"></div>
+    </div>
+
+    <script>
+        async function loadBlockchain() {
+            const response = await fetch('/blockchain/chain');
+            const data = await response.json();
+            const container = document.getElementById('blockchain-container');
+            container.innerHTML = `<p>Chain Length: ${data.length}</p>`;
+
+            data.chain.forEach(block => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'block-card';
+                blockDiv.innerHTML = `
+                    <h3>Block #${block.index}</h3>
+                    <p><strong>Timestamp:</strong> ${new Date(block.timestamp * 1000).toLocaleString()}</p>
+                    <p><strong>Proof:</strong> ${block.proof}</p>
+                    <p><strong>Previous Hash:</strong> ${block.previous_hash}</p>
+                    <p><strong>Transactions:</strong> ${block.transactions.length}</p>
+                    <div class="transactions">
+                        ${block.transactions.map(tx => `
+                            <div class="transaction">
+                                ${tx.sender} → ${tx.recipient}: ${tx.amount} coins (Campaign #${tx.campaign_id})
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(blockDiv);
+            });
+        }
+
+        async function validateChain() {
+            const response = await fetch('/blockchain/validate');
+            const data = await response.json();
+            alert(data.valid ? 'Blockchain is valid!' : 'Blockchain is invalid!');
+        }
+
+        loadBlockchain();
+    </script>
+    <script>
+        async function loadBlockchain() {
+            showLoading();
+            const response = await fetch('/blockchain/chain');
+            const data = await response.json();
+            hideLoading();
+
+            const container = document.getElementById('blockchain-container');
+
+            // Add summary
+            container.innerHTML = `
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+                <h2 style="margin: 0 0 10px 0;">📊 Blockchain Stats</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div>
+                        <div style="font-size: 36px; font-weight: bold;">${data.length}</div>
+                        <div style="opacity: 0.9;">Total Blocks</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 36px; font-weight: bold;">${data.chain.reduce((sum, block) => sum + block.transactions.length, 0)}</div>
+                        <div style="opacity: 0.9;">Transactions</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 36px; font-weight: bold;">100%</div>
+                        <div style="opacity: 0.9;">Secure</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            // Add blocks
+            data.chain.forEach((block, index) => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'block-card';
+
+                const date = new Date(block.timestamp * 1000);
+                const transactionCount = block.transactions.length;
+
+                blockDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">Block #${block.index}</h3>
+                    <span class="badge verified">✓ Verified</span>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <div style="display: grid; gap: 10px;">
+                        <div class="tooltip">
+                            <strong>⏰ Time:</strong> ${date.toLocaleString()}
+                            <span class="tooltiptext">When this block was created</span>
+                        </div>
+                        <div class="tooltip">
+                            <strong>🔐 Proof:</strong> ${block.proof}
+                            <span class="tooltiptext">Mathematical proof that work was done to create this block</span>
+                        </div>
+                        <div class="tooltip">
+                            <strong>🔗 Previous Hash:</strong> ${block.previous_hash.substring(0, 16)}...
+                            <span class="tooltiptext">Link to the previous block - this creates the chain!</span>
+                        </div>
+                        <div class="tooltip">
+                            <strong>📦 Transactions:</strong> ${transactionCount}
+                            <span class="tooltiptext">Number of donations recorded in this block</span>
+                        </div>
+                    </div>
+                </div>
+                
+                ${transactionCount > 0 ? `
+                    <div style="margin-top: 15px;">
+                        <strong>💰 Donations in this block:</strong>
+                        <div style="margin-top: 10px;">
+                            ${block.transactions.map(tx => `
+                                <div style="background: white; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #4CAF50;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span><strong>${tx.sender}</strong> → <strong>${tx.recipient}</strong></span>
+                                        <span style="color: #4CAF50; font-weight: bold;">${tx.amount} coins</span>
+                                    </div>
+                                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                        Campaign #${tx.campaign_id} • ${new Date(tx.timestamp * 1000).toLocaleString()}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : '<p style="color: #666; font-style: italic;">No transactions in this block</p>'}
+            `;
+
+                container.appendChild(blockDiv);
+            });
+
+            // Animate blocks
+            createBlockchainAnimation('blockchain-container');
+        }
+
+        async function validateChain() {
+            showLoading();
+            const response = await fetch('/blockchain/validate');
+            const data = await response.json();
+            hideLoading();
+
+            if (data.valid) {
+                triggerConfetti();
+                showNotification('✅ Blockchain is valid! All transactions are secure and verified.', 'success');
+            } else {
+                showNotification('❌ Blockchain validation failed! Security issue detected.', 'error');
+            }
+        }
+
+        loadBlockchain();
+    </script>
+
+</body>
+
+</html>
