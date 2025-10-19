@@ -26,3 +26,14 @@ YouTube: https://youtu.be/BfHEu93ZUno
 # Quick start
 - Install: Python 3.10+, pip install -r requirements.txt
 - Run: python app.py → http://127.0.0.1:5000
+
+# Screenshot 
+<img width="1715" height="1074" alt="Screenshot 2025-10-12 221056" src="https://github.com/user-attachments/assets/c076c7fc-0ac4-45c9-8fde-9234d810c33f" />
+
+<img width="1625" height="866" alt="Screenshot 2025-10-12 221231" src="https://github.com/user-attachments/assets/287dd63f-1bb3-44ab-952e-3ce9d34ffba3" />
+<img width="1721" height="790" alt="Screenshot 2025-10-12 221318" src="https://github.com/user-attachments/assets/97ca3b19-1b52-4b26-bb36-99cd81f6a4c1" />
+<img width="1677" height="775" alt="Screenshot 2025-10-12 221331" src="https://github.com/user-attachments/assets/5a26dc63-f4d7-4ca1-86e2-b3e05c6dec3c" />
+<img width="1670" height="858" alt="Screenshot 2025-10-12 221351" src="https://github.com/user-attachments/assets/5eb1814f-72c9-442d-abc8-dba23232ea16" />
+<img width="1476" height="830" alt="Screenshot 2025-10-12 221404" src="https://github.com/user-attachments/assets/bd27fdd3-9d67-4889-8716-f1980c96bc04" />
+<img width="1630" height="860" alt="Screenshot 2025-10-12 224229" src="https://github.com/user-attachments/assets/02c7597a-82e7-4943-ac04-b1b4cdffeddf" />
+<img width="1362" height="863" alt="Screenshot 2025-10-12 224317" src="https://github.com/user-attachments/assets/42d172a5-5d61-478d-a939-496f4966aa77" />
