@@ -1,6 +1,9 @@
 # Blockfund
 Decentralized Blockchain Crowdfunding Management System
 
+# Demo video
+YouTube: https://youtu.be/BfHEu93ZUno
+
 ## Project name
 - BlockFund — Decentralized Crowdfunding Platform
 
@@ -20,8 +23,11 @@ Decentralized Blockchain Crowdfunding Management System
 - Low‑friction: Simple web UI; no intermediaries, fast confirmations.<br>
 - Trustworthy: Permanent records increase accountability of campaign owners.<br>
 
-# Demo video
-YouTube: https://youtu.be/BfHEu93ZUno
+# Team Members
+- Shantanu Dongare <br>
+- Sarthak Deshmukh <br>
+- Shivam Gahale <br>
+- Devashree Pundlik <br>
 
 # Quick start
 - Install: Python 3.10+, pip install -r requirements.txt
